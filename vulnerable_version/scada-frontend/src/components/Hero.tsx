@@ -21,11 +21,11 @@ export const Hero = () => {
           <span className="text-5xl md:text-6xl text-white font-bold opacity-90 animate-scale-pulse">
             +
           </span>
-          <div className="text-8xl md:text-9xl animate-docker-bounce">🐳</div>
+          <div className="text-8xl md:text-9xl animate-docker-bounce">🐖</div>
         </div>
 
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6 leading-tight animate-title-reveal">
-          React.js + Pipo
+          React.js +<span className="text-pink-400">Romane</span>
           <span className="block bg-gradient-to-r from-[#4facfe] to-[#00f2fe] bg-clip-text text-transparent">
             Sample Project
           </span>
