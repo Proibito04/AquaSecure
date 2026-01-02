@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Server 1: SCADA Web Interface & App Server
   scada-app:
