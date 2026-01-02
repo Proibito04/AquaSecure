@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  # Server 1: SCADA Web Interface & App Server
+  scada-app:
+    build: ./scada-app
+    ports:
+      - "8080:80"
+    networks:
+      - ot-network
+    depends_on:
+      - scada-db
+
+  # Database for SQL Injection
+  scada-db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    networks:
+      - ot-network
+
+  # Server 2: PLC (Modbus TCP)
+  plc-server:
+    build: ./plc-simulator
+    ports:
+      - "502:502"
+    networks:
+      - ot-network
+
+networks:
+  ot-network:
+    driver: bridge
