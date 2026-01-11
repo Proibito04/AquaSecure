@@ -4,9 +4,11 @@ import time
 import yaml
 import os
 import logging
+import json
+from datetime import datetime
 from pydantic import BaseModel
-from typing import Optional
-from fastapi import FastAPI
+from typing import Optional, List
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="SCADA Backend System")
@@ -31,6 +33,29 @@ def log_attempt(endpoint: str, username: str, success: bool, details: str = ""):
     status = "SUCCESS" if success else "FAILED"
     logging.info(f"Endpoint: {endpoint} | User: {username} | Status: {status} | Details: {details}")
 
+# Attack logging to JSON for Step 1.6 & 2.x
+ATTACKS_FILE = os.path.join(os.path.dirname(__file__), 'attacks.json')
+
+def log_attack(vulnerability_type: str, details: str, severity: str = "High"):
+    attack_entry = {
+        "timestamp": datetime.now().isoformat(),
+        "type": vulnerability_type,
+        "details": details,
+        "severity": severity
+    }
+    
+    attacks = []
+    if os.path.exists(ATTACKS_FILE):
+        try:
+            with open(ATTACKS_FILE, 'r') as f:
+                attacks = json.load(f)
+        except:
+            attacks = []
+    
+    attacks.append(attack_entry)
+    with open(ATTACKS_FILE, 'w') as f:
+        json.dump(attacks, f, indent=4)
+
 # Load configuration for Step 1.1: Default Credentials
 def load_config():
     config_path = os.path.join(os.path.dirname(__file__), "config.yaml")
@@ -46,6 +71,9 @@ class LoginRequest(BaseModel):
 class PasswordResetRequest(BaseModel):
     username: str
     new_password: str
+
+class HostCheckRequest(BaseModel):
+    host: str
 
 def get_db_connection():
     """Establishes connection to the MySQL container"""
@@ -132,4 +160,67 @@ def login_sqli(req: LoginRequest):
         return {"status": "error", "message": "Invalid credentials"}
     except Exception as e:
         log_attempt("/api/v1/login/sqli", req.username, False, f"SQL Error: {str(e)}")
+        log_attack("SQL Injection", f"Failed attempt with error: {str(e)}")
         return {"status": "error", "message": str(e)}
+
+# --- Step 2: Discovery & Scanning ---
+
+# 2.2: Diagnostic Page Leak
+@app.get("/api/v1/diagnostics/info")
+def get_diagnostics_info():
+    # Leak sensitive OT information
+    info = {
+        "system_status": "Operational",
+        "ot_network_config": {
+            "remote_ips": ["192.168.10.50", "192.168.10.51", "10.0.0.12"],
+            "plc_ids": ["PLC_CL01", "PLC_PUMP02"],
+            "register_map": {
+                "40021": "Chlorine Setpoint",
+                "40022": "Flow Rate",
+                "40023": "Pressure"
+            },
+            "supported_function_codes": [1, 2, 3, 4, 5, 6, 15, 16]
+        },
+        "internal_debug": {
+            "gateway": "192.168.10.1",
+            "subnet": "255.255.255.0"
+        }
+    }
+    log_attack("Information Leak", "Unauthenticated access to sensitive diagnostics info", "Medium")
+    return info
+
+# 2.1: Auto-Discovery (Unauthenticated)
+@app.post("/api/v1/diagnostics/scan")
+def auto_discovery():
+    # Simulate scanning for Modbus devices on port 502
+    devices = [
+        {"ip": "192.168.10.50", "port": 502, "status": "detected", "type": "Schneider Electric PLC"},
+        {"ip": "192.168.10.51", "port": 502, "status": "detected", "type": "Siemens S7-1200 (Simulated)"},
+        {"ip": "10.0.0.12", "port": 502, "status": "timeout", "type": "Unknown"}
+    ]
+    log_attack("Unauthenticated Scan", "Triggered OT network device discovery")
+    return {"status": "scan_complete", "results": devices}
+
+# 2.4: Blind SSRF with weak blacklist
+SSRF_BLACKLIST = ["127.0.0.1", "localhost", "0.0.0.0"]
+
+@app.post("/api/v1/diagnostics/check-host")
+def check_host(req: HostCheckRequest):
+    # Weak blacklist check
+    if req.host in SSRF_BLACKLIST:
+        log_attack("SSRF Blocked", f"Blocked attempt to access {req.host}")
+        raise HTTPException(status_code=403, detail="Forbidden: Host is in blacklist")
+    
+    # 2.3: Verbose Error Messages (Simulated connection)
+    if req.host == "192.168.10.50":
+        # Simulate a Modbus specific error
+        detail = "Modbus Exception: ILLEGAL DATA ADDRESS (Unit ID: 1, Function: 3, Range: 40001-40100)"
+        log_attack("SSRF / Information Gathering", f"Probed host {req.host} - Received verbose error")
+        return {"status": "error", "detail": detail}
+    
+    if req.host == "192.168.10.51":
+        # Target PLC detected
+        log_attack("SSRF / Host Discovery", f"Successful probe of OT PLC at {req.host}", "High")
+        return {"status": "up", "detail": "Connection established on port 502. Device identified as PLC-MODBUS-CHLORINE."}
+    
+    return {"status": "down", "detail": f"Connection to {req.host} timed out after 5000ms"}

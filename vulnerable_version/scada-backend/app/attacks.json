@@ -1,0 +1,98 @@
+[
+    {
+        "timestamp": "2026-01-11T10:47:05.531515",
+        "type": "Information Leak",
+        "details": "Unauthenticated access to sensitive diagnostics info",
+        "severity": "Medium"
+    },
+    {
+        "timestamp": "2026-01-11T10:47:05.536345",
+        "type": "Information Leak",
+        "details": "Unauthenticated access to sensitive diagnostics info",
+        "severity": "Medium"
+    },
+    {
+        "timestamp": "2026-01-11T10:47:59.657301",
+        "type": "Unauthenticated Scan",
+        "details": "Triggered OT network device discovery",
+        "severity": "High"
+    },
+    {
+        "timestamp": "2026-01-11T10:48:18.239418",
+        "type": "SSRF / Host Discovery",
+        "details": "Successful probe of OT PLC at 192.168.10.51",
+        "severity": "High"
+    },
+    {
+        "timestamp": "2026-01-11T10:48:39.595326",
+        "type": "SSRF / Host Discovery",
+        "details": "Successful probe of OT PLC at 192.168.10.51",
+        "severity": "High"
+    },
+    {
+        "timestamp": "2026-01-11T10:49:26.522664",
+        "type": "SSRF / Host Discovery",
+        "details": "Successful probe of OT PLC at 192.168.10.51",
+        "severity": "High"
+    },
+    {
+        "timestamp": "2026-01-11T10:49:35.228266",
+        "type": "SSRF / Host Discovery",
+        "details": "Successful probe of OT PLC at 192.168.10.51",
+        "severity": "High"
+    },
+    {
+        "timestamp": "2026-01-11T10:49:50.324686",
+        "type": "SSRF / Host Discovery",
+        "details": "Successful probe of OT PLC at 192.168.10.51",
+        "severity": "High"
+    },
+    {
+        "timestamp": "2026-01-11T10:50:22.085087",
+        "type": "SSRF Blocked",
+        "details": "Blocked attempt to access 127.0.0.1",
+        "severity": "High"
+    },
+    {
+        "timestamp": "2026-01-11T10:54:24.195879",
+        "type": "Information Leak",
+        "details": "Unauthenticated access to sensitive diagnostics info",
+        "severity": "Medium"
+    },
+    {
+        "timestamp": "2026-01-11T10:54:24.202821",
+        "type": "Information Leak",
+        "details": "Unauthenticated access to sensitive diagnostics info",
+        "severity": "Medium"
+    },
+    {
+        "timestamp": "2026-01-11T10:54:51.347482",
+        "type": "Information Leak",
+        "details": "Unauthenticated access to sensitive diagnostics info",
+        "severity": "Medium"
+    },
+    {
+        "timestamp": "2026-01-11T10:54:51.354361",
+        "type": "Information Leak",
+        "details": "Unauthenticated access to sensitive diagnostics info",
+        "severity": "Medium"
+    },
+    {
+        "timestamp": "2026-01-11T10:55:01.700750",
+        "type": "Unauthenticated Scan",
+        "details": "Triggered OT network device discovery",
+        "severity": "High"
+    },
+    {
+        "timestamp": "2026-01-11T10:59:59.341621",
+        "type": "Information Leak",
+        "details": "Unauthenticated access to sensitive diagnostics info",
+        "severity": "Medium"
+    },
+    {
+        "timestamp": "2026-01-11T10:59:59.348334",
+        "type": "Information Leak",
+        "details": "Unauthenticated access to sensitive diagnostics info",
+        "severity": "Medium"
+    }
+]

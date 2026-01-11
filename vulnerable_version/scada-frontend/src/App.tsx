@@ -7,6 +7,8 @@ import { QuickStart } from "./components/QuickStart";
 import DefaultLogin from "./pages/DefaultLogin";
 import PasswordReset from "./pages/PasswordReset";
 import SQLILogin from "./pages/SQLILogin";
+import Discovery from "./pages/Discovery";
+import Diagnostics from "./pages/Diagnostics";
 
 const NavLink = ({ to, children }: { to: string, children: React.ReactNode }) => {
   const location = useLocation();
@@ -47,6 +49,8 @@ function App() {
               <NavLink to="/vulnerability/default-login">1.1 Default</NavLink>
               <NavLink to="/vulnerability/password-reset">1.2/1.3 Reset</NavLink>
               <NavLink to="/vulnerability/sqli-login">1.4 SQLi</NavLink>
+              <NavLink to="/vulnerability/discovery">2.1/2.3 Scan</NavLink>
+              <NavLink to="/vulnerability/diagnostics">2.2 Diagnostics</NavLink>
             </div>
           </div>
         </nav>
@@ -57,6 +61,8 @@ function App() {
             <Route path="/vulnerability/default-login" element={<DefaultLogin />} />
             <Route path="/vulnerability/password-reset" element={<PasswordReset />} />
             <Route path="/vulnerability/sqli-login" element={<SQLILogin />} />
+            <Route path="/vulnerability/discovery" element={<Discovery />} />
+            <Route path="/vulnerability/diagnostics" element={<Diagnostics />} />
           </Routes>
         </main>
 
