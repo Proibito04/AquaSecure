@@ -1,0 +1,7 @@
+default_credentials:
+  username: "admin"
+  password: "admin"
+
+security_settings:
+  lockout_enabled: false
+  rate_limit_enabled: false
