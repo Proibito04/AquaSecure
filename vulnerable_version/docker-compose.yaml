@@ -60,6 +60,17 @@ services:
       - ./scada-frontend/src:/app/src
       - ./scada-frontend/public:/app/public
     command: npm run dev -- --host
+    develop:
+      watch:
+        # Action 1: Sync code changes instantly
+        - action: sync
+          path: ./scada-backend/app
+          target: /app/app
+          initial_sync: true
+        
+        # Action 2: Rebuild image if dependencies change
+        - action: rebuild
+          path: ./scada-backend/requirements.txt
 
   # PLC SIMULATOR: Modbus Server (Python)
   plc-simulator:
