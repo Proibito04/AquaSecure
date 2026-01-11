@@ -1,0 +1,106 @@
+services:
+  # DATABASE: For demonstrating SQL Injection
+  scada-db:
+    image: mysql:8.0
+    container_name: scada-db-vulnerable
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password123
+      MYSQL_DATABASE: scada_system
+      MYSQL_USER: operator
+      MYSQL_PASSWORD: password123
+    networks:
+      - ot-network
+
+  # BACKEND: FastAPI (Python) - The core of the vulnerabilities
+  scada-backend:
+    build: 
+      context: ./scada-backend
+      dockerfile: Dockerfile
+    container_name: scada-backend-vulnerable
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=mysql+pymysql://operator:password123@scada-db/scada_system
+      - PLC_IP=192.168.10.5
+      - PLC_MODE=real
+    depends_on:
+      - scada-db
+    networks:
+      - web-network
+      - ot-network
+    volumes:
+      - ./scada-backend/app:/app/app # TODO: Remove this volume and understand develper options
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    develop:
+      watch:
+        # Action 1: Sync code changes instantly
+        - action: sync
+          path: ./scada-backend/app
+          target: /app/app
+          initial_sync: true
+        
+        # Action 2: Rebuild image if dependencies change
+        - action: rebuild
+          path: ./scada-backend/requirements.txt
+
+  # FRONTEND: React - SCADA Web Interface (Development with Hot Reload)
+  scada-frontend:
+    build:
+      context: ./scada-frontend
+      dockerfile: Dockerfile.dev
+    container_name: scada-frontend-vulnerable
+    ports:
+      - "3000:5173"
+    environment:
+      - VITE_BACKEND_URL=http://localhost:8000
+    networks:
+      - web-network
+    volumes:
+      - ./scada-frontend/src:/app/src
+      - ./scada-frontend/public:/app/public
+    command: npm run dev -- --host
+    develop:
+      watch:
+        # Action 1: Sync code changes instantly
+        - action: sync
+          path: ./scada-backend/app
+          target: /app/app
+          initial_sync: true
+        
+        # Action 2: Rebuild image if dependencies change
+        - action: rebuild
+          path: ./scada-backend/requirements.txt
+
+  # PLC SIMULATOR: Modbus Server (Python)
+  plc-simulator:
+    build: ./plc-simulator
+    container_name: plc-disinfection-controller
+    networks:
+      ot-network:
+        ipv4_address: 192.168.10.5
+    #ports:
+     # - "502:502"
+
+  # WELCOME MESSAGE
+  welcome:
+    image: python:3.11-slim
+    container_name: scada-welcome
+    depends_on:
+      - scada-frontend
+      - scada-backend
+      - plc-simulator
+    volumes:
+      - ./welcome.py:/welcome.py
+    command: python /welcome.py
+    networks:
+      - web-network
+
+networks:
+  web-network:
+    driver: bridge
+  ot-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.10.0/24

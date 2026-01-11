@@ -208,7 +208,7 @@ def get_diagnostics_info(request: Request):
     info = {
         "system_status": "Operational",
         "ot_network_config": {
-            "remote_ips": ["192.168.10.50", "192.168.10.51", "10.0.0.12"],
+            "remote_ips": ["192.168.10.5", "192.168.10.51", "10.0.0.12"],
             "plc_ids": ["PLC_CL01", "PLC_PUMP02"],
             "register_map": {
                 "40021": "Chlorine Setpoint",
@@ -232,7 +232,7 @@ def auto_discovery(request: Request):
         raise HTTPException(status_code=401, detail="Authentication required for network discovery")
 
     devices = [
-        {"ip": "192.168.10.50", "port": 502, "status": "detected", "type": "Schneider Electric PLC"},
+        {"ip": "192.168.10.5", "port": 502, "status": "detected", "type": "Schneider Electric PLC"},
         {"ip": "192.168.10.51", "port": 502, "status": "detected", "type": "Siemens S7-1200 (Simulated)"},
         {"ip": "10.0.0.12", "port": 502, "status": "timeout", "type": "Unknown"}
     ]
@@ -250,7 +250,7 @@ def check_host(req: HostCheckRequest, request: Request):
         log_attack("SSRF Blocked", f"Blocked attempt to access {req.host}")
         raise HTTPException(status_code=403, detail="Forbidden: Host is in blacklist")
     
-    if req.host == "192.168.10.50":
+    if req.host == "192.168.10.5":
         detail = "Modbus Exception: ILLEGAL DATA ADDRESS (Unit ID: 1, Function: 3, Range: 40001-40100)"
         log_attack("SSRF / Information Gathering", f"Probed host {req.host} - Received verbose error")
         return {"status": "error", "detail": detail}
