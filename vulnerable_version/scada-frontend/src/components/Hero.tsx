@@ -1,58 +1,58 @@
-import reactLogo from "../assets/react.svg";
-import { SOCIAL_LINKS } from "../constants/data";
+import { Link } from 'react-router-dom';
 
 export const Hero = () => {
   return (
-    <header className="min-h-[90vh] flex items-center justify-center bg-gradient-to-br from-[#667eea] via-[#764ba2] to-[#667eea] animate-background-shift relative overflow-hidden px-8 py-8">
-      <div className="absolute inset-0">
-        <div className="absolute top-20 left-20 w-2 h-2 bg-white/20 rounded-full animate-float animate-delay-100"></div>
-        <div className="absolute top-40 right-32 w-1 h-1 bg-blue-300/30 rounded-full animate-gentle-bounce animate-delay-200"></div>
-        <div className="absolute bottom-32 left-1/4 w-3 h-3 bg-purple-300/20 rounded-full animate-scale-pulse animate-delay-300"></div>
-        <div className="absolute top-1/3 right-20 w-2 h-2 bg-white/15 rounded-full animate-float animate-delay-500"></div>
+    <header className="min-h-[80vh] flex items-center justify-center bg-[#0a0f1e] relative overflow-hidden px-8 py-16">
+      {/* Dynamic Background Elements */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,#1e293b_0%,transparent_100%)]"></div>
+        <div className="absolute top-20 left-20 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-700"></div>
       </div>
 
-      <div className="max-w-4xl text-center relative z-10 animate-hero-entrance">
-        <div className="flex items-center justify-center gap-8 mb-8 animate-logo-float">
-          <img
-            src={reactLogo}
-            className="h-28 w-28 md:h-32 md:w-32 animate-react-spin animate-glow-intense"
-            alt="React logo"
-          />
-          <span className="text-5xl md:text-6xl text-white font-bold opacity-90 animate-scale-pulse">
-            +
-          </span>
-          <div className="text-8xl md:text-9xl animate-docker-bounce">🐖</div>
+      <div className="max-w-5xl text-center relative z-10">
+        <div className="inline-block mb-6 px-4 py-1.5 rounded-full border border-blue-500/30 bg-blue-500/5 text-blue-400 text-sm font-medium tracking-wide animate-fade-in">
+          OPERATIONAL TECHNOLOGY INTERFACE V4.2
         </div>
 
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6 leading-tight animate-title-reveal">
-          React.js +<span className="text-pink-400">Romane</span>
-          <span className="block bg-gradient-to-r from-[#4facfe] to-[#00f2fe] bg-clip-text text-transparent">
-            Sample Project
+        <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight tracking-tight">
+          Secure Control.
+          <span className="block mt-2 bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-500 bg-clip-text text-transparent">
+            Absolute Reliability.
           </span>
         </h1>
 
-        <p className="text-lg md:text-xl text-white/90 mb-10 leading-relaxed max-w-3xl mx-auto animate-subtitle-reveal">
-          A modern, containerized React application demonstrating best practices
-          for Docker integration, security, and production deployments.
+        <p className="text-xl md:text-2xl text-gray-400 mb-12 leading-relaxed max-w-3xl mx-auto font-light">
+          AquaSecure provides mission-critical SCADA solutions for modern water treatment facilities. 
+          Monitor, control, and protect your infrastructure with industrial-grade precision.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center animate-button-reveal">
-          <a
-            href={SOCIAL_LINKS.documentation}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-primary px-8 py-4 text-lg font-semibold bg-white text-[#667eea] rounded-xl shadow-xl"
+        <div className="flex flex-col sm:flex-row gap-6 justify-center">
+          <Link
+            to="/dashboard"
+            className="group relative px-8 py-4 bg-blue-600 text-white font-bold rounded-xl overflow-hidden transition-all hover:bg-blue-500 active:scale-95 shadow-lg shadow-blue-900/20"
           >
-            View Documentation
-          </a>
-          <a
-            href={SOCIAL_LINKS.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-primary px-8 py-4 text-lg font-semibold bg-white/10 text-white rounded-xl border-2 border-white backdrop-blur-sm"
+            <span className="relative z-10">Access Control Panel</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </Link>
+          <Link
+            to="/vulnerability/discovery"
+            className="px-8 py-4 bg-white/5 text-white font-bold rounded-xl border border-white/10 backdrop-blur-md hover:bg-white/10 transition-all active:scale-95"
           >
-            GitHub Repository
-          </a>
+            System Diagnostics
+          </Link>
+        </div>
+
+        <div className="mt-20 flex flex-wrap justify-center gap-12 grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+           <div className="flex items-center gap-2 text-white font-semibold tracking-widest text-sm">
+             <span className="text-blue-500">MODBUS</span> TCP/IP
+           </div>
+           <div className="flex items-center gap-2 text-white font-semibold tracking-widest text-sm">
+             <span className="text-cyan-500">PROFINET</span> RT
+           </div>
+           <div className="flex items-center gap-2 text-white font-semibold tracking-widest text-sm">
+             <span className="text-blue-400">ETHERNET</span>/IP
+           </div>
         </div>
       </div>
     </header>

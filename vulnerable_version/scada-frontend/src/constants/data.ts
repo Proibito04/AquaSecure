@@ -2,67 +2,67 @@ import type { Feature, DockerCommand } from "../types";
 
 export const FEATURES: Feature[] = [
   {
-    icon: "🐳",
-    title: "Docker Containerization",
+    icon: "🚰",
+    title: "Water Treatment",
     description:
-      "Seamlessly package your React app with Docker for consistent deployments across any environment.",
+      "Advanced control systems for water purification, filtration, and chemical dosing processes.",
   },
   {
-    icon: "⚡",
-    title: "Lightning Fast",
+    icon: "📊",
+    title: "Real-time Monitoring",
     description:
-      "Built with Vite for instant hot module replacement and optimized production builds.",
+      "Visualize your facility's health with live data feeds from PLCs and industrial sensors.",
   },
   {
-    icon: "🔒",
-    title: "Security First",
+    icon: "🛡️",
+    title: "Industrial Security",
     description:
-      "Scanned with Docker Scout to ensure zero vulnerabilities and secure deployments.",
+      "Robust protection for critical infrastructure with multi-layered defense and monitoring.",
   },
   {
-    icon: "🚀",
-    title: "Production Ready",
+    icon: "☁️",
+    title: "Edge Connectivity",
     description:
-      "Multi-stage builds with Nginx for optimized, production-grade static file serving.",
+      "Seamlessly bridge operational technology (OT) with modern IT systems for remote management.",
   },
   {
-    icon: "🛠️",
-    title: "Dev & Prod Workflows",
+    icon: "📉",
+    title: "Predictive Analytics",
     description:
-      "Separate Docker configurations for development and production environments.",
+      "Leverage historical data to optimize O&M and prevent system failures before they happen.",
   },
   {
-    icon: "📦",
-    title: "Modern Stack",
+    icon: "⚙️",
+    title: "Dynamic Control",
     description:
-      "React 19, TypeScript, Vite, and ESLint configured for the best developer experience.",
+      "Fine-tune system parameters on the fly with responsive and secure control interfaces.",
   },
 ];
 
 export const DOCKER_COMMANDS: DockerCommand[] = [
   {
-    title: "Development",
-    command: "docker compose up",
-    description: "Start development server with hot reload",
+    title: "Launch Infrastructure",
+    command: "docker compose up -d",
+    description: "Start the SCADA backend, PLCs, and dashboard in detached mode",
   },
   {
-    title: "Production Build",
-    command: "docker build -t react-docker-app .",
-    description: "Build optimized production image",
+    title: "Monitor Logs",
+    command: "docker compose logs -f",
+    description: "Watch real-time system telemetry and security alerts",
   },
   {
-    title: "Run Production",
-    command: "docker run -p 80:80 react-docker-app",
-    description: "Run production container",
+    title: "System Update",
+    command: "docker build -t aquasecure-core .",
+    description: "Rebuild the SCADA core components for production deployment",
   },
 ];
 
 export const SOCIAL_LINKS = {
-  linkedin: "https://www.linkedin.com/in/kristiyan-velkov-763130b3/",
-  medium: "https://medium.com/@kristiyanvelkov",
-  newsletter: "https://frontendworld.substack.com/",
-  github: "https://github.com/kristiyan-velkov/docker-reactjs-sample",
-  githubSponsors: "https://github.com/sponsors/kristiyan-velkov",
-  donate: "https://donate.stripe.com/eVq4gz9dKex71ZW68L3F600",
-  documentation: "https://docs.docker.com/guides/reactjs/",
+  linkedin: "#",
+  medium: "#",
+  newsletter: "#",
+  github: "https://github.com/Antigravity-SCADA/AquaSecure",
+  githubSponsors: "#",
+  donate: "#",
+  documentation: "#",
 } as const;
