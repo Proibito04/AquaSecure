@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const SQLILogin: React.FC = () => {
+    const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
@@ -15,9 +17,13 @@ const SQLILogin: React.FC = () => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password }),
+                credentials: 'include',
             });
             const data = await response.json();
             setMessage(data.message);
+            if (data.status === 'success') {
+                setTimeout(() => navigate('/dashboard'), 1500);
+            }
         } catch (error) {
             setMessage('Error connecting to backend');
         } finally {

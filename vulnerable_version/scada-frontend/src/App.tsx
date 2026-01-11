@@ -9,6 +9,7 @@ import PasswordReset from "./pages/PasswordReset";
 import SQLILogin from "./pages/SQLILogin";
 import Discovery from "./pages/Discovery";
 import Diagnostics from "./pages/Diagnostics";
+import Dashboard from "./pages/Dashboard";
 
 const NavLink = ({ to, children }: { to: string, children: React.ReactNode }) => {
   const location = useLocation();
@@ -46,6 +47,7 @@ function App() {
             </Link>
             <div className="hidden md:flex items-center gap-2">
               <NavLink to="/">Home</NavLink>
+              <NavLink to="/dashboard">Dashboard</NavLink>
               <NavLink to="/vulnerability/default-login">1.1 Default</NavLink>
               <NavLink to="/vulnerability/password-reset">1.2/1.3 Reset</NavLink>
               <NavLink to="/vulnerability/sqli-login">1.4 SQLi</NavLink>
@@ -60,10 +62,11 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/vulnerability/default-login" element={<DefaultLogin />} />
             <Route path="/vulnerability/password-reset" element={<PasswordReset />} />
-            <Route path="/vulnerability/sqli-login" element={<SQLILogin />} />
-            <Route path="/vulnerability/discovery" element={<Discovery />} />
-            <Route path="/vulnerability/diagnostics" element={<Diagnostics />} />
-          </Routes>
+             <Route path="/vulnerability/sqli-login" element={<SQLILogin />} />
+             <Route path="/vulnerability/discovery" element={<Discovery />} />
+             <Route path="/vulnerability/diagnostics" element={<Diagnostics />} />
+             <Route path="/dashboard" element={<Dashboard />} />
+           </Routes>
         </main>
 
         <Footer />

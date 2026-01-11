@@ -8,8 +8,9 @@ import json
 from datetime import datetime
 from pydantic import BaseModel
 from typing import Optional, List
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 
 app = FastAPI(title="SCADA Backend System")
 
@@ -29,19 +30,20 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
-def log_attempt(endpoint: str, username: str, success: bool, details: str = ""):
-    status = "SUCCESS" if success else "FAILED"
-    logging.info(f"Endpoint: {endpoint} | User: {username} | Status: {status} | Details: {details}")
+# In-memory store for Brute Force tracking
+failed_attempts = {}
 
 # Attack logging to JSON for Step 1.6 & 2.x
 ATTACKS_FILE = os.path.join(os.path.dirname(__file__), 'attacks.json')
 
-def log_attack(vulnerability_type: str, details: str, severity: str = "High"):
+def log_attack(vulnerability_type: str, details: str, severity: str = "High", ip: str = "Unknown", user_agent: str = "Unknown"):
     attack_entry = {
         "timestamp": datetime.now().isoformat(),
         "type": vulnerability_type,
         "details": details,
-        "severity": severity
+        "severity": severity,
+        "ip": ip,
+        "user_agent": user_agent
     }
     
     attacks = []
@@ -55,6 +57,37 @@ def log_attack(vulnerability_type: str, details: str, severity: str = "High"):
     attacks.append(attack_entry)
     with open(ATTACKS_FILE, 'w') as f:
         json.dump(attacks, f, indent=4)
+
+# Step 3: Monitoring & Attack Classification Middleware
+class SecurityMonitoringMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        # Capture metadata
+        ip = request.client.host
+        user_agent = request.headers.get("user-agent", "Unknown")
+        
+        # We need to read the body without consuming it
+        body = await request.body()
+        payload = body.decode() if body else ""
+        
+        # Classification for SQL Injection Attempt
+        sql_keywords = ["SELECT", "UNION", "OR", "DROP", "--", "INSERT"] # Subset for quick check
+        if any(keyword in payload.upper() for keyword in sql_keywords) and "/login" in request.url.path:
+            log_attack("SQL Injection Attempt", f"Payload: {payload}", "Critical", ip, user_agent)
+        
+        # Reset request state so the endpoint can read it again
+        async def receive():
+            return {"type": "http.request", "body": body}
+        
+        request._receive = receive
+        
+        response = await call_next(request)
+        return response
+
+app.add_middleware(SecurityMonitoringMiddleware)
+
+def log_attempt(endpoint: str, username: str, success: bool, details: str = ""):
+    status = "SUCCESS" if success else "FAILED"
+    logging.info(f"Endpoint: {endpoint} | User: {username} | Status: {status} | Details: {details}")
 
 # Load configuration for Step 1.1: Default Credentials
 def load_config():
@@ -95,20 +128,9 @@ def get_db_connection():
 def read_root():
     return {"status": "SCADA Backend is running", "network": "OT/Web Dual-Homed"}
 
-@app.get("/db-status")
-def check_db():
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT DATABASE();")
-        db_name = cursor.fetchone()
-        return {"database_connected": True, "db_name": db_name[0]}
-    except Exception as e:
-        return {"database_connected": False, "error": str(e)}
-
-# Step 1.1: Default Credentials
+# Step 1.1: Default Credentials with Vulnerable Session
 @app.post("/api/v1/login/default")
-def login_default(req: LoginRequest):
+def login_default(req: LoginRequest, response: Response):
     default_user = CONFIG['default_credentials']['username']
     default_pass = CONFIG['default_credentials']['password']
     
@@ -116,16 +138,24 @@ def login_default(req: LoginRequest):
     log_attempt("/api/v1/login/default", req.username, success)
     
     if success:
-        return {"status": "success", "message": "Logged in with default credentials"}
+        # Step 2: Vulnerable Session Management (No flags, predictable, accessible via JS)
+        response.set_cookie(key="session_id", value=req.username, httponly=False, samesite="lax", path="/")
+        return {"status": "success", "message": "Logged in with default credentials", "redirect": "/dashboard"}
+    
+    # Classification for Brute Force
+    failed_attempts[req.username] = failed_attempts.get(req.username, 0) + 1
+    if failed_attempts[req.username] > 3:
+        log_attack("Brute Force Attempt", f"Multiple failed logins for user: {req.username}")
+        
     return {"status": "error", "message": "Invalid credentials"}
 
-# Step 1.2 & 1.3: Insecure Password Reset (Brute-forceable) & Lack of Lockout
+# Step 1.2 & 1.3: Insecure Password Reset (Brute-forceable)
 @app.post("/api/v1/reset-password")
 def reset_password(req: PasswordResetRequest):
     log_attempt("/api/v1/reset-password", req.username, True, f"Resetting password for {req.username}")
     return {"status": "success", "message": f"Password for {req.username} has been reset"}
 
-# Step 1.4: SQL Injection with Blacklist
+# Step 1.4: SQL Injection with Blacklist and Vulnerable Session
 SQL_BLACKLIST = [
     "SELECT", "UNION", "OR", "DROP", "INSERT", "DELETE", "UPDATE", "WHERE", 
     "FROM", "LIMIT", "OFFSET", "HAVING", "GROUP", "ORDER", "BY", "LIKE", 
@@ -140,14 +170,16 @@ def check_blacklist(input_str: str):
     return False
 
 @app.post("/api/v1/login/sqli")
-def login_sqli(req: LoginRequest):
+def login_sqli(req: LoginRequest, response: Response):
     if check_blacklist(req.username) or check_blacklist(req.password):
         log_attempt("/api/v1/login/sqli", req.username, False, "Blocked by blacklist")
+        # Middleware already logs this as SQLi Attempt if keywords are found
         return {"status": "error", "message": "Malicious input detected"}
 
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
+        # VULNERABLE: Direct string concatenation
         query = f"SELECT * FROM users WHERE username = '{req.username}' AND password = '{req.password}'"
         cursor.execute(query)
         user = cursor.fetchone()
@@ -156,19 +188,22 @@ def login_sqli(req: LoginRequest):
         log_attempt("/api/v1/login/sqli", req.username, success, f"Query: {query}")
         
         if success:
-            return {"status": "success", "message": "Logged in via SQLi", "user": user}
+            response.set_cookie(key="session_id", value=req.username, httponly=False, samesite="lax", path="/")
+            return {"status": "success", "message": "Logged in via SQLi", "user": user, "redirect": "/dashboard"}
         return {"status": "error", "message": "Invalid credentials"}
     except Exception as e:
         log_attempt("/api/v1/login/sqli", req.username, False, f"SQL Error: {str(e)}")
-        log_attack("SQL Injection", f"Failed attempt with error: {str(e)}")
+        log_attack("SQL Injection Error", f"Failed attempt with error: {str(e)}")
         return {"status": "error", "message": str(e)}
 
 # --- Step 2: Discovery & Scanning ---
 
-# 2.2: Diagnostic Page Leak
 @app.get("/api/v1/diagnostics/info")
-def get_diagnostics_info():
-    # Leak sensitive OT information
+def get_diagnostics_info(request: Request):
+    if "session_id" not in request.cookies:
+        log_attack("Unauthorized Access Attempt", "Accessing diagnostics without session", "Medium")
+        raise HTTPException(status_code=401, detail="Authentication required to access internal diagnostics")
+    
     info = {
         "system_status": "Operational",
         "ot_network_config": {
@@ -186,40 +221,40 @@ def get_diagnostics_info():
             "subnet": "255.255.255.0"
         }
     }
-    log_attack("Information Leak", "Unauthenticated access to sensitive diagnostics info", "Medium")
+    log_attack("Information Leak", "Access to sensitive diagnostics info", "Medium")
     return info
 
-# 2.1: Auto-Discovery (Unauthenticated)
 @app.post("/api/v1/diagnostics/scan")
-def auto_discovery():
-    # Simulate scanning for Modbus devices on port 502
+def auto_discovery(request: Request):
+    if "session_id" not in request.cookies:
+        log_attack("Unauthorized Discovery Attempt", "Triggered OT discovery without session", "High")
+        raise HTTPException(status_code=401, detail="Authentication required for network discovery")
+
     devices = [
         {"ip": "192.168.10.50", "port": 502, "status": "detected", "type": "Schneider Electric PLC"},
         {"ip": "192.168.10.51", "port": 502, "status": "detected", "type": "Siemens S7-1200 (Simulated)"},
         {"ip": "10.0.0.12", "port": 502, "status": "timeout", "type": "Unknown"}
     ]
-    log_attack("Unauthenticated Scan", "Triggered OT network device discovery")
+    log_attack("Internal Scan", "Triggered OT network device discovery")
     return {"status": "scan_complete", "results": devices}
 
-# 2.4: Blind SSRF with weak blacklist
-SSRF_BLACKLIST = ["127.0.0.1", "localhost", "0.0.0.0"]
-
 @app.post("/api/v1/diagnostics/check-host")
-def check_host(req: HostCheckRequest):
-    # Weak blacklist check
+def check_host(req: HostCheckRequest, request: Request):
+    if "session_id" not in request.cookies:
+        log_attack("Unauthorized SSRF Attempt", "Attempted SSRF probe without session", "High")
+        raise HTTPException(status_code=401, detail="Authentication required for host diagnostic tools")
+
+    SSRF_BLACKLIST = ["127.0.0.1", "localhost", "0.0.0.0"]
     if req.host in SSRF_BLACKLIST:
         log_attack("SSRF Blocked", f"Blocked attempt to access {req.host}")
         raise HTTPException(status_code=403, detail="Forbidden: Host is in blacklist")
     
-    # 2.3: Verbose Error Messages (Simulated connection)
     if req.host == "192.168.10.50":
-        # Simulate a Modbus specific error
         detail = "Modbus Exception: ILLEGAL DATA ADDRESS (Unit ID: 1, Function: 3, Range: 40001-40100)"
         log_attack("SSRF / Information Gathering", f"Probed host {req.host} - Received verbose error")
         return {"status": "error", "detail": detail}
     
     if req.host == "192.168.10.51":
-        # Target PLC detected
         log_attack("SSRF / Host Discovery", f"Successful probe of OT PLC at {req.host}", "High")
         return {"status": "up", "detail": "Connection established on port 502. Device identified as PLC-MODBUS-CHLORINE."}
     

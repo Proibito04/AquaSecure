@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 interface ScanResult {
     ip: string;
@@ -13,12 +14,30 @@ const Discovery: React.FC = () => {
     const [hostToCheck, setHostToCheck] = useState('');
     const [hostStatus, setHostStatus] = useState<{ status: string; detail: string } | null>(null);
     const [isCheckingHost, setIsCheckingHost] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+
+    useEffect(() => {
+        const cookies = document.cookie.split(';').reduce((acc: any, cookie) => {
+            const [name, value] = cookie.trim().split('=');
+            acc[name] = value;
+            return acc;
+        }, {});
+
+        if (cookies.session_id) {
+            setIsAuthenticated(true);
+        } else {
+            setIsAuthenticated(false);
+        }
+    }, []);
 
     const handleScan = async () => {
         setIsScanning(true);
         try {
             const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
-            const response = await fetch(`${backendUrl}/api/v1/diagnostics/scan`, { method: 'POST' });
+            const response = await fetch(`${backendUrl}/api/v1/diagnostics/scan`, { 
+                method: 'POST',
+                credentials: 'include'
+            });
             const data = await response.json();
             setScanResults(data.results);
         } catch (error) {
@@ -37,10 +56,13 @@ const Discovery: React.FC = () => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ host: hostToCheck }),
+                credentials: 'include',
             });
             const data = await response.json();
             if (response.status === 403) {
                 setHostStatus({ status: 'blocked', detail: data.detail });
+            } else if (response.status === 401) {
+                setHostStatus({ status: 'error', detail: 'Unauthorized: Session missing' });
             } else {
                 setHostStatus(data);
             }
@@ -51,13 +73,33 @@ const Discovery: React.FC = () => {
         }
     };
 
+    if (isAuthenticated === false) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] animate-fade-in-up text-center">
+                <div className="p-12 rounded-2xl bg-red-500/10 border border-red-500/20 backdrop-blur-xl max-w-lg">
+                    <span className="text-6xl mb-6 block">🚫</span>
+                    <h2 className="text-3xl font-bold text-red-500 mb-4">Access Denied</h2>
+                    <p className="text-gray-400 mb-8 leading-relaxed">
+                        Network discovery tools are restricted to authenticated personnel. 
+                        Perform a Step 1 attack to gain administrative access.
+                    </p>
+                    <Link to="/vulnerability/sqli-login" className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all">
+                        Go to SQL Injection
+                    </Link>
+                </div>
+            </div>
+        );
+    }
+
+    if (isAuthenticated === null) return null;
+
     return (
         <div className="animate-hero-entrance space-y-8">
             {/* Step 2.1: Auto-Discovery */}
             <div className="p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-2xl">
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-white mb-2">Network Discovery</h1>
-                    <p className="text-gray-400 text-sm">Step 2.1: Auto-Discovery Unauthenticated (Modbus Port 502)</p>
+                    <p className="text-gray-400 text-sm">Step 2.1: Auto-Discovery (Requires Post-Exploitation Session)</p>
                 </div>
 
                 <button
@@ -111,7 +153,7 @@ const Discovery: React.FC = () => {
             <div className="p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-2xl">
                 <div className="mb-8">
                     <h2 className="text-2xl font-bold text-white mb-2">Diagnostic Host Checker</h2>
-                    <p className="text-gray-400 text-sm">Step 2.4: Blind SSRF with Blacklist & Step 2.3: Verbose Error Messages</p>
+                    <p className="text-gray-400 text-sm">Step 2.3 & 2.4: Post-Exploitation Information Gathering</p>
                 </div>
 
                 <form onSubmit={handleCheckHost} className="flex gap-4 mb-8">
@@ -162,3 +204,4 @@ const Discovery: React.FC = () => {
 };
 
 export default Discovery;
+

@@ -94,5 +94,289 @@
         "type": "Information Leak",
         "details": "Unauthenticated access to sensitive diagnostics info",
         "severity": "Medium"
+    },
+    {
+        "timestamp": "2026-01-11T11:10:10.238341",
+        "type": "Information Leak",
+        "details": "Unauthenticated access to sensitive diagnostics info",
+        "severity": "Medium"
+    },
+    {
+        "timestamp": "2026-01-11T11:10:10.242242",
+        "type": "Information Leak",
+        "details": "Unauthenticated access to sensitive diagnostics info",
+        "severity": "Medium"
+    },
+    {
+        "timestamp": "2026-01-11T11:15:51.324580",
+        "type": "Horizontal Privilege Escalation",
+        "details": "Accessing diagnostics without session",
+        "severity": "Medium",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
+    },
+    {
+        "timestamp": "2026-01-11T11:15:51.325588",
+        "type": "Information Leak",
+        "details": "Access to sensitive diagnostics info",
+        "severity": "Medium",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
+    },
+    {
+        "timestamp": "2026-01-11T11:15:51.332712",
+        "type": "Horizontal Privilege Escalation",
+        "details": "Accessing diagnostics without session",
+        "severity": "Medium",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
+    },
+    {
+        "timestamp": "2026-01-11T11:15:51.333649",
+        "type": "Information Leak",
+        "details": "Access to sensitive diagnostics info",
+        "severity": "Medium",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
+    },
+    {
+        "timestamp": "2026-01-11T11:16:03.287042",
+        "type": "Horizontal Privilege Escalation",
+        "details": "Accessing diagnostics without session",
+        "severity": "Medium",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
+    },
+    {
+        "timestamp": "2026-01-11T11:16:03.288214",
+        "type": "Information Leak",
+        "details": "Access to sensitive diagnostics info",
+        "severity": "Medium",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
+    },
+    {
+        "timestamp": "2026-01-11T11:16:03.299916",
+        "type": "Horizontal Privilege Escalation",
+        "details": "Accessing diagnostics without session",
+        "severity": "Medium",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
+    },
+    {
+        "timestamp": "2026-01-11T11:16:03.301271",
+        "type": "Information Leak",
+        "details": "Access to sensitive diagnostics info",
+        "severity": "Medium",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
+    },
+    {
+        "timestamp": "2026-01-11T11:16:08.473831",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\":\"admin\",\"password\":\"admin\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    {
+        "timestamp": "2026-01-11T11:19:20.438820",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\":\"admin\",\"password\":\"admin\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    {
+        "timestamp": "2026-01-11T11:19:56.736720",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\":\"admin\",\"password\":\"admin\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    {
+        "timestamp": "2026-01-11T11:21:34.035699",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\":\"admin\",\"password\":\"admin\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    {
+        "timestamp": "2026-01-11T11:21:50.801891",
+        "type": "Horizontal Privilege Escalation",
+        "details": "Accessing diagnostics without session",
+        "severity": "Medium",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
+    },
+    {
+        "timestamp": "2026-01-11T11:21:50.803408",
+        "type": "Information Leak",
+        "details": "Access to sensitive diagnostics info",
+        "severity": "Medium",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
+    },
+    {
+        "timestamp": "2026-01-11T11:21:50.814039",
+        "type": "Horizontal Privilege Escalation",
+        "details": "Accessing diagnostics without session",
+        "severity": "Medium",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
+    },
+    {
+        "timestamp": "2026-01-11T11:21:50.815886",
+        "type": "Information Leak",
+        "details": "Access to sensitive diagnostics info",
+        "severity": "Medium",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
+    },
+    {
+        "timestamp": "2026-01-11T11:21:52.859726",
+        "type": "Horizontal Privilege Escalation",
+        "details": "Accessing diagnostics without session",
+        "severity": "Medium",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
+    },
+    {
+        "timestamp": "2026-01-11T11:21:52.861660",
+        "type": "Information Leak",
+        "details": "Access to sensitive diagnostics info",
+        "severity": "Medium",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
+    },
+    {
+        "timestamp": "2026-01-11T11:21:52.870632",
+        "type": "Horizontal Privilege Escalation",
+        "details": "Accessing diagnostics without session",
+        "severity": "Medium",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
+    },
+    {
+        "timestamp": "2026-01-11T11:21:52.872022",
+        "type": "Information Leak",
+        "details": "Access to sensitive diagnostics info",
+        "severity": "Medium",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
+    },
+    {
+        "timestamp": "2026-01-11T11:26:33.752802",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\":\"' oR 1=1 --\",\"password\":\"password123\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    {
+        "timestamp": "2026-01-11T11:27:14.847884",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\":\"admin' oR '1'='1\",\"password\":\"password123\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    {
+        "timestamp": "2026-01-11T11:27:42.965670",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\":\"admin' or 1=1 --\",\"password\":\"password123\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    {
+        "timestamp": "2026-01-11T11:28:35.524767",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\":\"' oR 1=1 --\",\"password\":\"test\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    {
+        "timestamp": "2026-01-11T11:29:26.049052",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\":\"admin' --\",\"password\":\"test\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    {
+        "timestamp": "2026-01-11T11:29:26.109962",
+        "type": "SQL Injection Error",
+        "details": "Failed attempt with error: 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'test'' at line 1",
+        "severity": "High",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
+    },
+    {
+        "timestamp": "2026-01-11T11:30:05.676399",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\":\"' oR 1=1 #\",\"password\":\"test\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    {
+        "timestamp": "2026-01-11T11:30:48.072022",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\":\"' oR 1=1 -- -\",\"password\":\"test\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    {
+        "timestamp": "2026-01-11T11:39:09.563548",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\":\"' oR 1=1 -- -\",\"password\":\"test\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    {
+        "timestamp": "2026-01-11T11:39:36.146570",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\":\"' oR 1=1 -- -\",\"password\":\"test\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    {
+        "timestamp": "2026-01-11T11:40:37.939552",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\":\"' oR 1=1 -- -\",\"password\":\"test\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    {
+        "timestamp": "2026-01-11T11:41:31.702909",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\":\"' oR 1=1 -- -\",\"password\":\"test\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    {
+        "timestamp": "2026-01-11T11:44:50.136248",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\":\"' oR 1=1 -- -\",\"password\":\"test\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    {
+        "timestamp": "2026-01-11T11:47:30.245756",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\":\"\",\"password\":\"\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
     }
 ]

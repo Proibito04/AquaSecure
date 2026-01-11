@@ -1,6 +1,6 @@
 import logging
 import asyncio
-from pymodbus.server import StartTcpServer
+from pymodbus.server import StartAsyncTcpServer
 from pymodbus.device import ModbusDeviceIdentification
 from pymodbus.datastore import ModbusSequentialDataBlock, ModbusSlaveContext, ModbusServerContext
 
@@ -30,7 +30,7 @@ async def run_server():
     identity.MajorMinorRevision = '1.0.0'
 
     log.info("Starting PLC Simulator (Modbus Server) on 0.0.0.0:502")
-    await StartTcpServer(context=context, identity=identity, address=("0.0.0.0", 502))
+    await StartAsyncTcpServer(context=context, identity=identity, address=("0.0.0.0", 502))
 
 if __name__ == "__main__":
     asyncio.run(run_server())

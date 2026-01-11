@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 interface DiagnosticInfo {
     system_status: string;
@@ -18,23 +19,56 @@ const Diagnostics: React.FC = () => {
     const [info, setInfo] = useState<DiagnosticInfo | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
     useEffect(() => {
-        const fetchDiagnostics = async () => {
-            try {
-                const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
-                const response = await fetch(`${backendUrl}/api/v1/diagnostics/info`);
-                if (!response.ok) throw new Error('Failed to fetch diagnostics');
-                const data = await response.json();
-                setInfo(data);
-            } catch (err: any) {
-                setError(err.message);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchDiagnostics();
+        const cookies = document.cookie.split(';').reduce((acc: any, cookie) => {
+            const [name, value] = cookie.trim().split('=');
+            acc[name] = value;
+            return acc;
+        }, {});
+
+        if (cookies.session_id) {
+            setIsAuthenticated(true);
+            const fetchDiagnostics = async () => {
+                try {
+                    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+                    const response = await fetch(`${backendUrl}/api/v1/diagnostics/info`, {
+                        credentials: 'include'
+                    });
+                    if (!response.ok) throw new Error('Failed to fetch diagnostics');
+                    const data = await response.json();
+                    setInfo(data);
+                } catch (err: any) {
+                    setError(err.message);
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+            fetchDiagnostics();
+        } else {
+            setIsAuthenticated(false);
+            setIsLoading(false);
+        }
     }, []);
+
+    if (isAuthenticated === false) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] animate-fade-in-up text-center">
+                <div className="p-12 rounded-2xl bg-red-500/10 border border-red-500/20 backdrop-blur-xl max-w-lg">
+                    <span className="text-6xl mb-6 block">🚫</span>
+                    <h2 className="text-3xl font-bold text-red-500 mb-4">Access Denied</h2>
+                    <p className="text-gray-400 mb-8 leading-relaxed">
+                        Diagnostic tools are only accessible to authenticated operators. 
+                        Use an exploit from Step 1 to acquire a <code>session_id</code>.
+                    </p>
+                    <Link to="/vulnerability/sqli-login" className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all">
+                        Go to SQL Injection
+                    </Link>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="animate-hero-entrance space-y-8">
@@ -107,7 +141,7 @@ const Diagnostics: React.FC = () => {
                             </div>
                             
                             <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-xs text-red-300">
-                                <p>⚠️ <strong>Security Audit Note:</strong> This page is accessible without authentication. Register 40021 (Chlorine Setpoint) is a critical control register.</p>
+                                <p>⚠️ <strong>Security Audit Note:</strong> Authentication verified. Post-exploitation mode active. Register 40021 (Chlorine Setpoint) identified.</p>
                             </div>
                         </div>
                     </div>
@@ -118,3 +152,4 @@ const Diagnostics: React.FC = () => {
 };
 
 export default Diagnostics;
+
