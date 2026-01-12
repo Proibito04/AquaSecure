@@ -250,12 +250,12 @@ def check_host(req: HostCheckRequest, request: Request):
         log_attack("SSRF Blocked", f"Blocked attempt to access {req.host}")
         raise HTTPException(status_code=403, detail="Forbidden: Host is in blacklist")
     
-    if req.host == "192.168.10.50":
+    if req.host == "192.168.10.4":
         detail = "Modbus Exception: ILLEGAL DATA ADDRESS (Unit ID: 1, Function: 3, Range: 40001-40100)"
         log_attack("SSRF / Information Gathering", f"Probed host {req.host} - Received verbose error")
         return {"status": "error", "detail": detail}
     
-    if req.host == "192.168.10.51":
+    if req.host == "192.168.10.5":
         log_attack("SSRF / Host Discovery", f"Successful probe of OT PLC at {req.host}", "High")
         return {"status": "up", "detail": "Connection established on port 502. Device identified as PLC-MODBUS-CHLORINE."}
     
