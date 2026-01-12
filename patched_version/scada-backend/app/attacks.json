@@ -386,5 +386,21 @@
         "severity": "Critical",
         "ip": "192.168.10.1",
         "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0"
+    },
+    {
+        "timestamp": "2026-01-12T12:47:49.956530",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\":\"SELECT\",\"password\":\"ciao\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    {
+        "timestamp": "2026-01-12T12:47:50.025732",
+        "type": "SQL Injection Error",
+        "details": "Failed attempt with error: 1146 (42S02): Table 'scada_system.users' doesn't exist",
+        "severity": "High",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
     }
 ]

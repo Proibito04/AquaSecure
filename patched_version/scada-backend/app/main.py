@@ -156,33 +156,14 @@ def reset_password(req: PasswordResetRequest):
     log_attempt("/api/v1/reset-password", req.username, True, f"Resetting password for {req.username}")
     return {"status": "success", "message": f"Password for {req.username} has been reset"}
 
-# Step 1.4: SQL Injection with Blacklist and Vulnerable Session
-SQL_BLACKLIST = [
-    "SELECT", "UNION", "OR", "DROP", "INSERT", "DELETE", "UPDATE", "WHERE", 
-    "FROM", "LIMIT", "OFFSET", "HAVING", "GROUP", "ORDER", "BY", "LIKE", 
-    "CAST", "CONVERT", "EXEC", "SLEEP", "BENCHMARK"
-]
-
-def check_blacklist(input_str: str):
-    upper_input = input_str.upper()
-    for word in SQL_BLACKLIST:
-        if word in upper_input:
-            return True
-    return False
-
 @app.post("/api/v1/login/sqli")
 def login_sqli(req: LoginRequest, response: Response):
-    if check_blacklist(req.username) or check_blacklist(req.password):
-        log_attempt("/api/v1/login/sqli", req.username, False, "Blocked by blacklist")
-        # Middleware already logs this as SQLi Attempt if keywords are found
-        return {"status": "error", "message": "Malicious input detected"}
-
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        # VULNERABLE: Direct string concatenation
-        query = f"SELECT * FROM users WHERE username = '{req.username}' AND password = '{req.password}'"
-        cursor.execute(query)
+        # SECURE: Use parameterized query
+        query = "SELECT * FROM users WHERE username = %s AND password = %s"
+        cursor.execute(query, (req.username, req.password))
         user = cursor.fetchone()
         
         success = user is not None
