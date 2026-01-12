@@ -11,6 +11,8 @@ services:
       MYSQL_PASSWORD: password123
     networks:
       - ot-network
+    volumes:
+      - ./scada-backend/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   # BACKEND: FastAPI (Python) - The core of the vulnerabilities
   scada-backend:
@@ -24,6 +26,8 @@ services:
       - DATABASE_URL=mysql+pymysql://operator:password123@scada-db/scada_system
       - PLC_IP=192.168.10.5
       - PLC_MODE=real
+    env_file:
+      - ./scada-backend/.env
     depends_on:
       - scada-db
     networks:

@@ -12,6 +12,7 @@ from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from pymodbus.client import ModbusTcpClient
+import bcrypt
 
 app = FastAPI(title="SCADA Backend System")
 
@@ -132,10 +133,13 @@ def read_root():
 # Step 1.1: Default Credentials with Vulnerable Session
 @app.post("/api/v1/login/default")
 def login_default(req: LoginRequest, response: Response):
-    default_user = CONFIG['default_credentials']['username']
-    default_pass = CONFIG['default_credentials']['password']
+    # Pull identity from environment for better security
+    default_user = os.getenv("ADMIN_USERNAME", "admin")
+    # Use environment variable for the hash, with a fallback for security
+    stored_hash = os.getenv("ADMIN_PWD_HASH", "$2b$12$HtJ6tOUf85OolOI5ceiiKO1ttpyn31e7RtQqS.LqdhnIwLuIMRzCK")
     
-    success = (req.username == default_user and req.password == default_pass)
+    # Secure verification using bcrypt hashes (direct usage)
+    success = (req.username == default_user and bcrypt.checkpw(req.password.encode(), stored_hash.encode()))
     log_attempt("/api/v1/login/default", req.username, success)
     
     if success:
@@ -161,17 +165,21 @@ def login_sqli(req: LoginRequest, response: Response):
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        # SECURE: Use parameterized query
-        query = "SELECT * FROM users WHERE username = %s AND password = %s"
-        cursor.execute(query, (req.username, req.password))
-        user = cursor.fetchone()
+        # SECURE: Use parameterized query and verify hashed password (direct bcrypt)
+        query = "SELECT password_hash FROM users WHERE username = %s"
+        cursor.execute(query, (req.username,))
+        result = cursor.fetchone()
         
-        success = user is not None
+        success = False
+        if result:
+            password_hash = result[0]
+            success = bcrypt.checkpw(req.password.encode(), password_hash.encode())
+        
         log_attempt("/api/v1/login/sqli", req.username, success, f"Query: {query}")
         
         if success:
             response.set_cookie(key="session_id", value=req.username, httponly=False, samesite="lax", path="/")
-            return {"status": "success", "message": "Logged in via SQLi", "user": user, "redirect": "/dashboard"}
+            return {"status": "success", "message": "Logged in via SQLi", "user": req.username, "redirect": "/dashboard"}
         return {"status": "error", "message": "Invalid credentials"}
     except Exception as e:
         log_attempt("/api/v1/login/sqli", req.username, False, f"SQL Error: {str(e)}")
