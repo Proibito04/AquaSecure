@@ -26,6 +26,8 @@ services:
       - DATABASE_URL=mysql+pymysql://operator:password123@scada-db/scada_system
       - PLC_IP=192.168.10.5
       - PLC_MODE=real
+    env_file:
+      - ./scada-backend/.env
     depends_on:
       - scada-db
     networks:
@@ -81,8 +83,8 @@ services:
     networks:
       ot-network:
         ipv4_address: 192.168.10.5
-    ports:
-      - "502:502"
+    #ports:
+     # - "502:502"
 
   # WELCOME MESSAGE
   welcome:

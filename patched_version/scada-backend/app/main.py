@@ -12,6 +12,7 @@ from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from pymodbus.client import ModbusTcpClient
+import bcrypt
 
 app = FastAPI(title="SCADA Backend System")
 
@@ -132,10 +133,13 @@ def read_root():
 # Step 1.1: Default Credentials with Vulnerable Session
 @app.post("/api/v1/login/default")
 def login_default(req: LoginRequest, response: Response):
-    default_user = CONFIG['default_credentials']['username']
-    default_pass = CONFIG['default_credentials']['password']
+    # Pull identity from environment for better security
+    default_user = os.getenv("ADMIN_USERNAME", "admin")
+    # Use environment variable for the hash, with a fallback for security
+    stored_hash = os.getenv("ADMIN_PWD_HASH", "$2b$12$HtJ6tOUf85OolOI5ceiiKO1ttpyn31e7RtQqS.LqdhnIwLuIMRzCK")
     
-    success = (req.username == default_user and req.password == default_pass)
+    # Secure verification using bcrypt hashes (direct usage)
+    success = (req.username == default_user and bcrypt.checkpw(req.password.encode(), stored_hash.encode()))
     log_attempt("/api/v1/login/default", req.username, success)
     
     if success:
@@ -156,41 +160,26 @@ def reset_password(req: PasswordResetRequest):
     log_attempt("/api/v1/reset-password", req.username, True, f"Resetting password for {req.username}")
     return {"status": "success", "message": f"Password for {req.username} has been reset"}
 
-# Step 1.4: SQL Injection with Blacklist and Vulnerable Session
-SQL_BLACKLIST = [
-    "SELECT", "UNION", "OR", "DROP", "INSERT", "DELETE", "UPDATE", "WHERE", 
-    "FROM", "LIMIT", "OFFSET", "HAVING", "GROUP", "ORDER", "BY", "LIKE", 
-    "CAST", "CONVERT", "EXEC", "SLEEP", "BENCHMARK"
-]
-
-def check_blacklist(input_str: str):
-    upper_input = input_str.upper()
-    for word in SQL_BLACKLIST:
-        if word in upper_input:
-            return True
-    return False
-
 @app.post("/api/v1/login/sqli")
 def login_sqli(req: LoginRequest, response: Response):
-    if check_blacklist(req.username) or check_blacklist(req.password):
-        log_attempt("/api/v1/login/sqli", req.username, False, "Blocked by blacklist")
-        # Middleware already logs this as SQLi Attempt if keywords are found
-        return {"status": "error", "message": "Malicious input detected"}
-
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        # VULNERABLE: Direct string concatenation
-        query = f"SELECT * FROM users WHERE username = '{req.username}' AND password = '{req.password}'"
-        cursor.execute(query)
-        user = cursor.fetchone()
+        # SECURE: Use parameterized query and verify hashed password (direct bcrypt)
+        query = "SELECT password_hash FROM users WHERE username = %s"
+        cursor.execute(query, (req.username,))
+        result = cursor.fetchone()
         
-        success = user is not None
+        success = False
+        if result:
+            password_hash = result[0]
+            success = bcrypt.checkpw(req.password.encode(), password_hash.encode())
+        
         log_attempt("/api/v1/login/sqli", req.username, success, f"Query: {query}")
         
         if success:
             response.set_cookie(key="session_id", value=req.username, httponly=False, samesite="lax", path="/")
-            return {"status": "success", "message": "Logged in via SQLi", "user": user, "redirect": "/dashboard"}
+            return {"status": "success", "message": "Logged in via SQLi", "user": req.username, "redirect": "/dashboard"}
         return {"status": "error", "message": "Invalid credentials"}
     except Exception as e:
         log_attempt("/api/v1/login/sqli", req.username, False, f"SQL Error: {str(e)}")
@@ -208,7 +197,7 @@ def get_diagnostics_info(request: Request):
     info = {
         "system_status": "Operational",
         "ot_network_config": {
-            "remote_ips": ["192.168.10.50", "192.168.10.51", "10.0.0.12"],
+            "remote_ips": ["192.168.10.5", "192.168.10.51", "10.0.0.12"],
             "plc_ids": ["PLC_CL01", "PLC_PUMP02"],
             "register_map": {
                 "40021": "Chlorine Setpoint",
@@ -232,7 +221,7 @@ def auto_discovery(request: Request):
         raise HTTPException(status_code=401, detail="Authentication required for network discovery")
 
     devices = [
-        {"ip": "192.168.10.50", "port": 502, "status": "detected", "type": "Schneider Electric PLC"},
+        {"ip": "192.168.10.5", "port": 502, "status": "detected", "type": "Schneider Electric PLC"},
         {"ip": "192.168.10.51", "port": 502, "status": "detected", "type": "Siemens S7-1200 (Simulated)"},
         {"ip": "10.0.0.12", "port": 502, "status": "timeout", "type": "Unknown"}
     ]
@@ -250,7 +239,7 @@ def check_host(req: HostCheckRequest, request: Request):
         log_attack("SSRF Blocked", f"Blocked attempt to access {req.host}")
         raise HTTPException(status_code=403, detail="Forbidden: Host is in blacklist")
     
-    if req.host == "192.168.10.50":
+    if req.host == "192.168.10.5":
         detail = "Modbus Exception: ILLEGAL DATA ADDRESS (Unit ID: 1, Function: 3, Range: 40001-40100)"
         log_attack("SSRF / Information Gathering", f"Probed host {req.host} - Received verbose error")
         return {"status": "error", "detail": detail}

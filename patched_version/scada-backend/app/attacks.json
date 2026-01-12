@@ -380,7 +380,7 @@
         "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
     },
     {
-        "timestamp": "2026-01-11T21:16:11.488430",
+        "timestamp": "2026-01-11T21:47:39.855874",
         "type": "SQL Injection Attempt",
         "details": "Payload: {\"username\":\"admin\",\"password\":\"admin\"}",
         "severity": "Critical",
@@ -388,43 +388,291 @@
         "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0"
     },
     {
-        "timestamp": "2026-01-11T21:18:46.515576",
+        "timestamp": "2026-01-12T12:47:49.956530",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\":\"SELECT\",\"password\":\"ciao\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    {
+        "timestamp": "2026-01-12T12:47:50.025732",
+        "type": "SQL Injection Error",
+        "details": "Failed attempt with error: 1146 (42S02): Table 'scada_system.users' doesn't exist",
+        "severity": "High",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
+    },
+    {
+        "timestamp": "2026-01-12T13:08:19.868532",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\": \"admin\", \"password\": \"AquaRoot#2026Secure\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "python-requests/2.32.3"
+    },
+    {
+        "timestamp": "2026-01-12T13:08:19.906344",
+        "type": "SQL Injection Error",
+        "details": "Failed attempt with error: 1146 (42S02): Table 'scada_system.users' doesn't exist",
+        "severity": "High",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
+    },
+    {
+        "timestamp": "2026-01-12T13:08:19.915350",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\": \"operator\", \"password\": \"WaterOp-99-Patched!\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "python-requests/2.32.3"
+    },
+    {
+        "timestamp": "2026-01-12T13:08:19.936867",
+        "type": "SQL Injection Error",
+        "details": "Failed attempt with error: 1146 (42S02): Table 'scada_system.users' doesn't exist",
+        "severity": "High",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
+    },
+    {
+        "timestamp": "2026-01-12T13:08:19.943105",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\": \"admin\", \"password\": \"AquaRoot#2026Secure\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "python-requests/2.32.3"
+    },
+    {
+        "timestamp": "2026-01-12T13:08:19.963035",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\": \"admin\", \"password\": \"WrongPassword\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "python-requests/2.32.3"
+    },
+    {
+        "timestamp": "2026-01-12T13:08:19.988928",
+        "type": "SQL Injection Error",
+        "details": "Failed attempt with error: 1146 (42S02): Table 'scada_system.users' doesn't exist",
+        "severity": "High",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
+    },
+    {
+        "timestamp": "2026-01-12T13:08:19.996218",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\": \"admin' OR '1'='1\", \"password\": \"any\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "python-requests/2.32.3"
+    },
+    {
+        "timestamp": "2026-01-12T13:08:20.018642",
+        "type": "SQL Injection Error",
+        "details": "Failed attempt with error: 1146 (42S02): Table 'scada_system.users' doesn't exist",
+        "severity": "High",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
+    },
+    {
+        "timestamp": "2026-01-12T13:08:45.404769",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\": \"admin\", \"password\": \"AquaRoot#2026Secure\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "python-requests/2.32.3"
+    },
+    {
+        "timestamp": "2026-01-12T13:08:45.431394",
+        "type": "SQL Injection Error",
+        "details": "Failed attempt with error: password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])",
+        "severity": "High",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
+    },
+    {
+        "timestamp": "2026-01-12T13:08:45.437018",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\": \"operator\", \"password\": \"WaterOp-99-Patched!\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "python-requests/2.32.3"
+    },
+    {
+        "timestamp": "2026-01-12T13:08:45.463019",
+        "type": "SQL Injection Error",
+        "details": "Failed attempt with error: password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])",
+        "severity": "High",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
+    },
+    {
+        "timestamp": "2026-01-12T13:08:45.469149",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\": \"admin\", \"password\": \"AquaRoot#2026Secure\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "python-requests/2.32.3"
+    },
+    {
+        "timestamp": "2026-01-12T13:08:45.485474",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\": \"admin\", \"password\": \"WrongPassword\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "python-requests/2.32.3"
+    },
+    {
+        "timestamp": "2026-01-12T13:08:45.518470",
+        "type": "SQL Injection Error",
+        "details": "Failed attempt with error: password cannot be longer than 72 bytes, truncate manually if necessary (e.g. my_password[:72])",
+        "severity": "High",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
+    },
+    {
+        "timestamp": "2026-01-12T13:08:45.524441",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\": \"admin' OR '1'='1\", \"password\": \"any\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "python-requests/2.32.3"
+    },
+    {
+        "timestamp": "2026-01-12T13:09:09.270123",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\": \"admin\", \"password\": \"AquaRoot#2026Secure\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "python-requests/2.32.3"
+    },
+    {
+        "timestamp": "2026-01-12T13:09:09.699287",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\": \"operator\", \"password\": \"WaterOp-99-Patched!\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "python-requests/2.32.3"
+    },
+    {
+        "timestamp": "2026-01-12T13:09:10.114411",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\": \"admin\", \"password\": \"AquaRoot#2026Secure\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "python-requests/2.32.3"
+    },
+    {
+        "timestamp": "2026-01-12T13:09:10.515398",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\": \"admin\", \"password\": \"WrongPassword\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "python-requests/2.32.3"
+    },
+    {
+        "timestamp": "2026-01-12T13:09:10.929795",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\": \"admin' OR '1'='1\", \"password\": \"any\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "python-requests/2.32.3"
+    },
+    {
+        "timestamp": "2026-01-12T13:12:20.999634",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\":\"admin\",\"password\":\"AquaRoot#2026Secure\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    {
+        "timestamp": "2026-01-12T13:12:35.650918",
         "type": "SQL Injection Attempt",
         "details": "Payload: {\"username\":\"admin\",\"password\":\"admin\"}",
         "severity": "Critical",
         "ip": "192.168.10.1",
-        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0"
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
     },
     {
-        "timestamp": "2026-01-11T21:18:55.660348",
+        "timestamp": "2026-01-12T13:12:38.922343",
         "type": "SQL Injection Attempt",
-        "details": "Payload: {\"username\":\"admin\",\"password\":\"admin\"}",
+        "details": "Payload: {\"username\":\"admin\",\"password\":\"ciao\"}",
         "severity": "Critical",
         "ip": "192.168.10.1",
-        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0"
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
     },
     {
-        "timestamp": "2026-01-11T21:20:28.151149",
+        "timestamp": "2026-01-12T13:12:41.832211",
         "type": "SQL Injection Attempt",
-        "details": "Payload: {\"username\":\"admin\",\"password\":\"admin\"}",
-        "severity": "Critical",
-        "ip": "172.18.0.1",
-        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0"
-    },
-    {
-        "timestamp": "2026-01-11T21:25:39.693774",
-        "type": "SQL Injection Attempt",
-        "details": "Payload: {\"username\":\"admin\",\"password\":\"admin\"}",
+        "details": "Payload: {\"username\":\"admin\",\"password\":\"quaRoot#2026Secure\"}",
         "severity": "Critical",
         "ip": "192.168.10.1",
-        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0"
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
     },
     {
-        "timestamp": "2026-01-11T21:42:18.726555",
+        "timestamp": "2026-01-12T13:12:51.318238",
         "type": "SQL Injection Attempt",
-        "details": "Payload: {\"username\":\"admin\",\"password\":\"admin\"}",
+        "details": "Payload: {\"username\":\"admin\",\"password\":\"AquaRoot#2026Secure\"}",
         "severity": "Critical",
         "ip": "192.168.10.1",
-        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0"
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    {
+        "timestamp": "2026-01-12T13:17:21.113726",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\": \"admin\", \"password\": \"AquaRoot#2026Secure\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "python-requests/2.32.3"
+    },
+    {
+        "timestamp": "2026-01-12T13:17:21.567163",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\": \"operator\", \"password\": \"WaterOp-99-Patched!\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "python-requests/2.32.3"
+    },
+    {
+        "timestamp": "2026-01-12T13:17:22.021158",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\": \"admin\", \"password\": \"AquaRoot#2026Secure\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "python-requests/2.32.3"
+    },
+    {
+        "timestamp": "2026-01-12T13:24:41.665918",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\":\"admin\",\"password\":\"AquaRoot#2026Secure\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    {
+        "timestamp": "2026-01-12T13:24:50.520805",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\":\"admin\",\"password\":\"AquaRoot#2026Secure\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    {
+        "timestamp": "2026-01-12T13:24:54.382262",
+        "type": "Information Leak",
+        "details": "Access to sensitive diagnostics info",
+        "severity": "Medium",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
+    },
+    {
+        "timestamp": "2026-01-12T13:24:54.391936",
+        "type": "Information Leak",
+        "details": "Access to sensitive diagnostics info",
+        "severity": "Medium",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
     }
 ]

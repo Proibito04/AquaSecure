@@ -3,3 +3,5 @@ uvicorn
 mysql-connector-python
 PyYAML
 pymodbus==3.6.4
+passlib[bcrypt]
+bcrypt

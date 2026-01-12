@@ -1,0 +1,3 @@
+security_settings:
+  lockout_enabled: true
+  rate_limit_enabled: true
