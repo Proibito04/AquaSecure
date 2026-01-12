@@ -1,5 +1,6 @@
 import logging
 import asyncio
+import signal
 from pymodbus.server import StartAsyncTcpServer
 from pymodbus.device import ModbusDeviceIdentification
 from pymodbus.datastore import ModbusSequentialDataBlock, ModbusSlaveContext, ModbusServerContext
@@ -40,14 +41,47 @@ async def run_server():
     identity.ProductName = 'Disinfection Unit PLC'
     identity.ModelName = 'AS-2025-V1'
     
-    # 3. START SERVER [cite: 53]
+    # 3. START SERVER
     # Listening on 0.0.0.0 means "Accept connections from ANY IP"
-    # This satisfies "No Authentication" [cite: 90]
+    # This satisfies "No Authentication"
     log.info("[-] OT SYSTEM STARTING: Chlorine Dosing Controller")
     log.info(f"[-] CRITICAL REGISTER: 40021 (Value: {INITIAL_CHLORINE})")
     log.info("[-] WAITING FOR COMMANDS on Port 502...")
     
-    await StartAsyncTcpServer(context=context, identity=identity, address=("0.0.0.0", 502))
+    # Set up graceful shutdown
+    stop_event = asyncio.Event()
+    loop = asyncio.get_running_loop()
+
+    def handle_signal():
+        log.info("[-] RECEIVED TERMINATION SIGNAL. Shutting down...")
+        stop_event.set()
+
+    for sig in (signal.SIGTERM, signal.SIGINT):
+        loop.add_signal_handler(sig, handle_signal)
+
+    # Start server in a background task
+    server_task = asyncio.create_task(
+        StartAsyncTcpServer(
+            context=context, 
+            identity=identity, 
+            address=("0.0.0.0", 502)
+        )
+    )
+
+    # Wait for the stop event
+    await stop_event.wait()
+
+    # Cancel the server task and wait for it to finish
+    server_task.cancel()
+    try:
+        await server_task
+    except asyncio.CancelledError:
+        pass
+    
+    log.info("[-] OT SYSTEM SHUTDOWN COMPLETE.")
 
 if __name__ == "__main__":
-    asyncio.run(run_server())
+    try:
+        asyncio.run(run_server())
+    except KeyboardInterrupt:
+        pass
