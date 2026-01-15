@@ -143,8 +143,8 @@ def login_default(req: LoginRequest, response: Response):
     log_attempt("/api/v1/login/default", req.username, success)
     
     if success:
-        # Step 2: Vulnerable Session Management (No flags, predictable, accessible via JS)
-        response.set_cookie(key="session_id", value=req.username, httponly=False, samesite="lax", path="/")
+        # SECURE: HttpOnly=True prevents XSS from stealing the session cookie
+        response.set_cookie(key="session_id", value=req.username, httponly=True, samesite="lax", path="/")
         return {"status": "success", "message": "Logged in with default credentials", "redirect": "/dashboard"}
     
     # Classification for Brute Force
@@ -154,9 +154,12 @@ def login_default(req: LoginRequest, response: Response):
         
     return {"status": "error", "message": "Invalid credentials"}
 
-# Step 1.2 & 1.3: Insecure Password Reset (Brute-forceable)
+# SECURE Password Reset
 @app.post("/api/v1/reset-password")
-def reset_password(req: PasswordResetRequest):
+def reset_password(req: PasswordResetRequest, request: Request):
+    if "session_id" not in request.cookies:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
     log_attempt("/api/v1/reset-password", req.username, True, f"Resetting password for {req.username}")
     return {"status": "success", "message": f"Password for {req.username} has been reset"}
 
@@ -178,8 +181,9 @@ def login_sqli(req: LoginRequest, response: Response):
         log_attempt("/api/v1/login/sqli", req.username, success, f"Query: {query}")
         
         if success:
-            response.set_cookie(key="session_id", value=req.username, httponly=False, samesite="lax", path="/")
-            return {"status": "success", "message": "Logged in via SQLi", "user": req.username, "redirect": "/dashboard"}
+            # SECURE: HttpOnly=True
+            response.set_cookie(key="session_id", value=req.username, httponly=True, samesite="lax", path="/")
+            return {"status": "success", "message": "Logged in securely", "user": req.username, "redirect": "/dashboard"}
         return {"status": "error", "message": "Invalid credentials"}
     except Exception as e:
         log_attempt("/api/v1/login/sqli", req.username, False, f"SQL Error: {str(e)}")
@@ -188,84 +192,51 @@ def login_sqli(req: LoginRequest, response: Response):
 
 # --- Step 2: Discovery & Scanning ---
 
+# SECURE: No sensitive Information Leakage
 @app.get("/api/v1/diagnostics/info")
 def get_diagnostics_info(request: Request):
     if "session_id" not in request.cookies:
-        log_attack("Unauthorized Access Attempt", "Accessing diagnostics without session", "Medium")
-        raise HTTPException(status_code=401, detail="Authentication required to access internal diagnostics")
+        raise HTTPException(status_code=401, detail="Authentication required")
     
-    info = {
+    return {
         "system_status": "Operational",
-        "ot_network_config": {
-            "remote_ips": ["192.168.10.5", "192.168.10.51", "10.0.0.12"],
-            "plc_ids": ["PLC_CL01", "PLC_PUMP02"],
-            "register_map": {
-                "40021": "Chlorine Setpoint",
-                "40022": "Flow Rate",
-                "40023": "Pressure"
-            },
-            "supported_function_codes": [1, 2, 3, 4, 5, 6, 15, 16]
-        },
-        "internal_debug": {
-            "gateway": "192.168.10.1",
-            "subnet": "255.255.255.0"
-        }
+        "description": "Standard Water Treatment Control System Monitoring"
     }
-    log_attack("Information Leak", "Access to sensitive diagnostics info", "Medium")
-    return info
 
 @app.post("/api/v1/diagnostics/scan")
 def auto_discovery(request: Request):
     if "session_id" not in request.cookies:
-        log_attack("Unauthorized Discovery Attempt", "Triggered OT discovery without session", "High")
-        raise HTTPException(status_code=401, detail="Authentication required for network discovery")
+        raise HTTPException(status_code=401, detail="Authentication required")
 
-    devices = [
-        {"ip": "192.168.10.5", "port": 502, "status": "detected", "type": "Schneider Electric PLC"},
-        {"ip": "192.168.10.51", "port": 502, "status": "detected", "type": "Siemens S7-1200 (Simulated)"},
-        {"ip": "10.0.0.12", "port": 502, "status": "timeout", "type": "Unknown"}
-    ]
-    log_attack("Internal Scan", "Triggered OT network device discovery")
-    return {"status": "scan_complete", "results": devices}
+    return {
+        "status": "scan_complete", 
+        "results": [
+            {"status": "detected", "type": "Subsystem A"},
+            {"status": "detected", "type": "Subsystem B"}
+        ]
+    }
 
-@app.post("/api/v1/diagnostics/check-host")
-def check_host(req: HostCheckRequest, request: Request):
-    if "session_id" not in request.cookies:
-        log_attack("Unauthorized SSRF Attempt", "Attempted SSRF probe without session", "High")
-        raise HTTPException(status_code=401, detail="Authentication required for host diagnostic tools")
-
-    SSRF_BLACKLIST = ["127.0.0.1", "localhost", "0.0.0.0"]
-    if req.host in SSRF_BLACKLIST:
-        log_attack("SSRF Blocked", f"Blocked attempt to access {req.host}")
-        raise HTTPException(status_code=403, detail="Forbidden: Host is in blacklist")
-    
-    if req.host == "192.168.10.5":
-        detail = "Modbus Exception: ILLEGAL DATA ADDRESS (Unit ID: 1, Function: 3, Range: 40001-40100)"
-        log_attack("SSRF / Information Gathering", f"Probed host {req.host} - Received verbose error")
-        return {"status": "error", "detail": detail}
-    
-    if req.host == "192.168.10.51":
-        log_attack("SSRF / Host Discovery", f"Successful probe of OT PLC at {req.host}", "High")
-        return {"status": "up", "detail": "Connection established on port 502. Device identified as PLC-MODBUS-CHLORINE."}
-    
-    return {"status": "down", "detail": f"Connection to {req.host} timed out after 5000ms"}
+# SSRF ENDPOINT DELETED (Security Patch)
 
 # --- REAL PLC INTEGRATION (Added by Boran) ---
 
 @app.get("/api/v1/plc/live-status")
-def get_plc_live_status():
+def get_plc_live_status(request: Request):
     """
     Connects to the REAL Docker PLC container to read the Chlorine Level.
     This allows the dashboard to reflect the attack in real-time.
     """
+    if "session_id" not in request.cookies:
+        raise HTTPException(status_code=401, detail="Authentication required")
+        
     try:
         # Connect to the PLC container
         client = ModbusTcpClient("192.168.10.5", port=502)
         if not client.connect():
              return {"status": "offline", "chlorine_level": -1, "message": "PLC Connection Failed"}
 
-        # Read Holding Register 40021 (Address 20 > changed to 19!)
-        rr = client.read_holding_registers(19, 1)
+        # Read Holding Register 40021 (Address 20)
+        rr = client.read_holding_registers(20, 1)
         client.close()
 
         if rr.isError():

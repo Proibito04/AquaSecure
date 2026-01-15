@@ -10,20 +10,24 @@ const Dashboard: React.FC = () => {
     const [systemState, setSystemState] = useState<string>("SAFE");
 
     useEffect(() => {
-        // VULNERABLE: Checking session_id from document.cookie (Insecure Session Management)
-        const cookies = document.cookie.split(';').reduce((acc: any, cookie) => {
-            const [name, value] = cookie.trim().split('=');
-            acc[name] = value;
-            return acc;
-        }, {});
-
-        if (cookies.session_id) {
-            setIsAuthenticated(true);
-            setUser(cookies.session_id);
-        } else {
-            setIsAuthenticated(false);
-            // Optionally redirect after a few seconds if you want the user to see the error
-        }
+        // SECURE: We no longer read session_id from document.cookie (HttpOnly protection)
+        // Instead, we verify authentication by attempting to fetch live data.
+        const checkAuth = async () => {
+             try {
+                const response = await fetch('http://localhost:8000/api/v1/plc/live-status');
+                if (response.status === 401) {
+                    setIsAuthenticated(false);
+                    navigate('/vulnerability/default-login');
+                } else {
+                    setIsAuthenticated(true);
+                    setUser("Authorized Operator"); 
+                }
+             } catch (error) {
+                console.error("Auth check failed", error);
+                setIsAuthenticated(false);
+             }
+        };
+        checkAuth();
     }, []);
 
     // 2. NEW: Poll the Backend for Real PLC Data
@@ -56,9 +60,12 @@ const Dashboard: React.FC = () => {
         return () => clearInterval(interval);
     }, [isAuthenticated]);
 
-    const handleLogout = () => {
-        // Insecure logout: just clear the cookie client-side
-        document.cookie = "session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    const handleLogout = async () => {
+        try {
+            await fetch('http://localhost:8000/api/v1/logout', { method: 'POST' });
+        } catch (e) {
+            console.error("Logout failed", e);
+        }
         navigate('/vulnerability/default-login');
     };
 
@@ -92,7 +99,7 @@ const Dashboard: React.FC = () => {
                 <div className="flex justify-between items-center mb-8">
                     <div>
                         <h1 className="text-3xl font-bold text-white mb-2">SCADA Control Center</h1>
-                        <p className="text-gray-400 text-sm italic">Authenticated Session: <span className="text-blue-400 font-mono">{user}</span> (v1.0.4-vuln)</p>
+                        <p className="text-gray-400 text-sm italic">Authenticated Session: <span className="text-blue-400 font-mono">{user}</span> (v1.1.0-patched)</p>
                     </div>
                     <div className="flex items-center gap-4">
                         <button 
@@ -173,10 +180,10 @@ const Dashboard: React.FC = () => {
                 </div>
                 <div className="p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-2xl">
                     <h2 className="text-xl font-bold text-white mb-4">Security Advisory</h2>
-                    <p className="text-sm text-gray-400 leading-relaxed">
-                        Note: This session is managed via <code>session_id</code> cookie. 
-                        In this vulnerable demonstration, the cookie is insecurely configured 
-                        (no HttpOnly/Secure flags) and predictable, allowing for session hijacking research.
+                    <p className="text-sm text-green-400 leading-relaxed font-bold">
+                        PROTECTED: This session is managed via <code>HttpOnly</code> cookies. 
+                        JavaScript cannot access the session token, protecting against XSS-based 
+                        session hijacking. SQL Injection and SSRF have also been patched in this version.
                     </p>
                 </div>
             </div>

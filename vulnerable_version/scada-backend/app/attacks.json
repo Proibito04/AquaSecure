@@ -426,5 +426,53 @@
         "severity": "Critical",
         "ip": "192.168.10.1",
         "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0"
+    },
+    {
+        "timestamp": "2026-01-15T15:02:00.969942",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\":\"admin\",\"password\":\"AquaRoot#2026Secure\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    {
+        "timestamp": "2026-01-15T15:02:04.883346",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\":\"admin\",\"password\":\"admin\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    {
+        "timestamp": "2026-01-15T15:08:03.979597",
+        "type": "Information Leak",
+        "details": "Access to sensitive diagnostics info",
+        "severity": "Medium",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
+    },
+    {
+        "timestamp": "2026-01-15T15:08:03.989433",
+        "type": "Information Leak",
+        "details": "Access to sensitive diagnostics info",
+        "severity": "Medium",
+        "ip": "Unknown",
+        "user_agent": "Unknown"
+    },
+    {
+        "timestamp": "2026-01-15T15:08:13.943595",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\":\"admin\",\"password\":\"admin\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+    },
+    {
+        "timestamp": "2026-01-15T15:13:05.292681",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\":\"admin\",\"password\":\"admin\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
     }
 ]

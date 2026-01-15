@@ -277,8 +277,8 @@ def get_plc_live_status():
         if not client.connect():
              return {"status": "offline", "chlorine_level": -1, "message": "PLC Connection Failed"}
 
-        # Read Holding Register 40021 (Address 20 > changed to 19!)
-        rr = client.read_holding_registers(19, 1)
+        # Read Holding Register 40021 (Address 20)
+        rr = client.read_holding_registers(20, 1)
         client.close()
 
         if rr.isError():

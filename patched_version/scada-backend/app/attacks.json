@@ -674,5 +674,13 @@
         "severity": "Medium",
         "ip": "Unknown",
         "user_agent": "Unknown"
+    },
+    {
+        "timestamp": "2026-01-15T14:59:56.454587",
+        "type": "SQL Injection Attempt",
+        "details": "Payload: {\"username\":\"admin\",\"password\":\"AquaRoot#2026Secure\"}",
+        "severity": "Critical",
+        "ip": "192.168.10.1",
+        "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
     }
 ]

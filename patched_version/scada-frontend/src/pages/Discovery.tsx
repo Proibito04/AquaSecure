@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 interface ScanResult {
     ip: string;
@@ -9,6 +9,7 @@ interface ScanResult {
 }
 
 const Discovery: React.FC = () => {
+    const navigate = useNavigate();
     const [scanResults, setScanResults] = useState<ScanResult[]>([]);
     const [isScanning, setIsScanning] = useState(false);
     const [hostToCheck, setHostToCheck] = useState('');
@@ -17,29 +18,40 @@ const Discovery: React.FC = () => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
     useEffect(() => {
-        const cookies = document.cookie.split(';').reduce((acc: any, cookie) => {
-            const [name, value] = cookie.trim().split('=');
-            acc[name] = value;
-            return acc;
-        }, {});
-
-        if (cookies.session_id) {
-            setIsAuthenticated(true);
-        } else {
-            setIsAuthenticated(false);
-        }
+        // SECURE: Auth check via API response code
+        const checkAuth = async () => {
+             try {
+                const response = await fetch('http://localhost:8000/api/v1/plc/live-status');
+                if (response.status === 401) {
+                    setIsAuthenticated(false);
+                    navigate('/vulnerability/default-login');
+                } else {
+                    setIsAuthenticated(true);
+                }
+             } catch (error) {
+                console.error("Auth check failed", error);
+                setIsAuthenticated(false);
+             }
+        };
+        checkAuth();
     }, []);
 
     const handleScan = async () => {
         setIsScanning(true);
         try {
-            const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
-            const response = await fetch(`${backendUrl}/api/v1/diagnostics/scan`, { 
-                method: 'POST',
-                credentials: 'include'
-            });
+            const response = await fetch('http://localhost:8000/api/v1/plc/live-status');
             const data = await response.json();
-            setScanResults(data.results);
+            
+            if (data.status === 'online') {
+                setScanResults([{
+                    ip: '192.168.10.5',
+                    port: 502,
+                    status: 'detected',
+                    type: 'AquaSecure Industrial PLC'
+                }]);
+            } else {
+                setScanResults([]);
+            }
         } catch (error) {
             console.error('Scan failed', error);
         } finally {
@@ -149,54 +161,14 @@ const Discovery: React.FC = () => {
                 )}
             </div>
 
-            {/* Step 2.4: Blind SSRF & 2.3: Verbose Errors */}
+            {/* Step 2.4 & 2.3: REMOVED (SSRF and Verbose Errors Patched) */}
             <div className="p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-2xl">
-                <div className="mb-8">
-                    <h2 className="text-2xl font-bold text-white mb-2">Diagnostic Host Checker</h2>
-                    <p className="text-gray-400 text-sm">Step 2.3 & 2.4: Post-Exploitation Information Gathering</p>
+                <div className="mb-4">
+                    <h2 className="text-2xl font-bold text-white mb-2">Network Security Status</h2>
+                    <p className="text-green-400 text-sm font-bold">✅ SECURED: Diagnostics endpoints have been hardened.</p>
                 </div>
-
-                <form onSubmit={handleCheckHost} className="flex gap-4 mb-8">
-                    <input
-                        type="text"
-                        placeholder="IP Address (e.g. 192.168.10.50)"
-                        className="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-white transition-all"
-                        value={hostToCheck}
-                        onChange={(e) => setHostToCheck(e.target.value)}
-                    />
-                    <button
-                        type="submit"
-                        disabled={isCheckingHost}
-                        className="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-xl transition-all disabled:opacity-50"
-                    >
-                        {isCheckingHost ? 'Checking...' : 'Check Connection'}
-                    </button>
-                </form>
-
-                {hostStatus && (
-                    <div className={`p-6 rounded-xl border animate-fade-in-up ${
-                        hostStatus.status === 'up' 
-                            ? 'bg-green-500/10 border-green-500/20 text-green-400' 
-                            : hostStatus.status === 'blocked'
-                            ? 'bg-yellow-500/10 border-yellow-500/20 text-yellow-500'
-                            : 'bg-red-500/10 border-red-500/20 text-red-400'
-                    }`}>
-                        <div className="flex items-start gap-3">
-                            <span className="text-lg">
-                                {hostStatus.status === 'up' ? '✅' : hostStatus.status === 'blocked' ? '🚫' : '❌'}
-                            </span>
-                            <div>
-                                <h4 className="font-bold mb-1 uppercase tracking-wider text-xs">
-                                    {hostStatus.status === 'up' ? 'Success' : hostStatus.status === 'blocked' ? 'Blocked' : 'Error'}
-                                </h4>
-                                <p className="text-sm font-mono break-all leading-relaxed">{hostStatus.detail}</p>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                <div className="mt-8 p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl text-xs text-blue-300">
-                    <p>💡 <strong>Hint:</strong> The diagnostic tool has a weak blacklist. Try <code>127.0.0.1</code> to see it in action, then try to bypass it if possible (e.g. using CIDR, octal, or other representations). Probe IPs found in the Diagnostics page.</p>
+                <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-xl text-xs text-green-300">
+                    <p>Information leakage and SSRF vulnerabilities have been removed. The system no longer permits arbitrary host checks via diagnostic tools.</p>
                 </div>
             </div>
         </div>
