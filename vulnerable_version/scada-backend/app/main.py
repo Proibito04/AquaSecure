@@ -150,7 +150,7 @@ def login_default(req: LoginRequest, response: Response):
         
     return {"status": "error", "message": "Invalid credentials"}
 
-# Step 1.2 & 1.3: Insecure Password Reset (Brute-forceable)
+# Step 1.2 & 1.3: VULNERABLE Insecure Password Reset (Brute-forceable) 
 @app.post("/api/v1/reset-password")
 def reset_password(req: PasswordResetRequest):
     log_attempt("/api/v1/reset-password", req.username, True, f"Resetting password for {req.username}")
@@ -199,6 +199,7 @@ def login_sqli(req: LoginRequest, response: Response):
 
 # --- Step 2: Discovery & Scanning ---
 
+# VULNERABLE: No authentication Information Leakage
 @app.get("/api/v1/diagnostics/info")
 def get_diagnostics_info(request: Request):
     if "session_id" not in request.cookies:
@@ -239,6 +240,7 @@ def auto_discovery(request: Request):
     log_attack("Internal Scan", "Triggered OT network device discovery")
     return {"status": "scan_complete", "results": devices}
 
+# VULNERABLE: SSFR
 @app.post("/api/v1/diagnostics/check-host")
 def check_host(req: HostCheckRequest, request: Request):
     if "session_id" not in request.cookies:
